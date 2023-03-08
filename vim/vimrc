@@ -1,0 +1,110 @@
+" Vim with all enhancements
+source $VIMRUNTIME/vimrc_example.vim
+
+" プラグインインストール
+call plug#begin('C:\Program Files (x86)\Vim\vim90\plugged')
+    Plug 'https://github.com/cohama/lexima.vim'
+    Plug 'Yggdroot/indentLine'
+    Plug 'ayu-theme/ayu-vim'
+	Plug 'prabirshrestha/vim-lsp'
+	Plug 'mattn/vim-lsp-settings'
+	Plug 'prabirshrestha/asyncomplete.vim'
+	Plug 'prabirshrestha/asyncomplete-lsp.vim'
+call plug#end()
+
+" エディタに関して
+
+" 行番号表示
+set number
+
+" タブ幅4文字固定
+set tabstop=4
+set shiftwidth=4
+
+" マウスカーソル有効化
+set mouse=a
+
+" コピー結果をクリップボードに貼り付け
+set clipboard=unnamed
+
+" カーソル表示
+set cursorline
+
+" 配色について
+syntax on
+set t_Co=256
+colorscheme atom-dark-256
+
+" キーバインド<insert>
+
+" jjでインサートモード終了
+inoremap <silent> jj <ESC>
+
+" キーバインド<normal>
+
+" Shift+Wでファイルの先頭行
+nnoremap<S-W> gg
+
+" Shift+Aで行の先頭
+nnoremap <S-A> ^
+
+" Shift+Sでファイルの終端行
+nnoremap <S-S> G
+
+" Shift+Dで行の終端
+nnoremap <S-D> $
+
+" Ctrl+Zで作業取り消し
+nnoremap <C-Z> u
+
+" Shift+↑で10行上に移動
+nnoremap <S-Up> 10k
+
+" Shift+↓で10行下に移動
+nnoremap <S-Down> 10j
+
+" Shift+→で10行右に移動
+nnoremap <S-Right> 10l
+
+" Shift+←で10行左に移動
+nnoremap <S-Left> 10h
+
+"
+" Use the internal diff if available.
+" Otherwise use the special 'diffexpr' for Windows.
+if &diffopt !~# 'internal'
+  set diffexpr=MyDiff()
+endif
+function MyDiff()
+  let opt = '-a --binary '
+  if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+  if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+  let arg1 = v:fname_in
+  if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
+  let arg1 = substitute(arg1, '!', '\!', 'g')
+  let arg2 = v:fname_new
+  if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
+  let arg2 = substitute(arg2, '!', '\!', 'g')
+  let arg3 = v:fname_out
+  if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
+  let arg3 = substitute(arg3, '!', '\!', 'g')
+  if $VIMRUNTIME =~ ' '
+    if &sh =~ '\<cmd'
+      if empty(&shellxquote)
+        let l:shxq_sav = ''
+        set shellxquote&
+      endif
+      let cmd = '"' . $VIMRUNTIME . '\diff"'
+    else
+      let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
+    endif
+  else
+    let cmd = $VIMRUNTIME . '\diff'
+  endif
+  let cmd = substitute(cmd, '!', '\!', 'g')
+  silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3
+  if exists('l:shxq_sav')
+    let &shellxquote=l:shxq_sav
+  endif
+endfunction
+
